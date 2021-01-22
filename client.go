@@ -150,11 +150,9 @@ func getAllRecords(ctx context.Context, p *Provider, domain string) ([]libdns.Re
 	respBody, err := doRequest(p, req)
 	if err != nil {return nil, err}
 
-	fmt.Println(string(respBody))
 	var records = []unconformRecord{}
 	err = json.Unmarshal(respBody, &records)
 	if err != nil {return nil, err}
-	fmt.Println(records)
 	result := []libdns.Record{}
 	for _, r := range records {
 		result = append(result, convertUnconformRecord(domain, r))
