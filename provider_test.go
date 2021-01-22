@@ -14,7 +14,6 @@ var (
 	user string = ""
 	password string = ""
 	domain string = ""
-	p *corenetworks.Provider
 )
 
 func TestMain(m *testing.M) {
@@ -27,12 +26,12 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 
-	p = &corenetworks.Provider{user, password}
-
 	os.Exit(m.Run())
 }
 
 func TestGetRecords(t *testing.T) {
+	p := &corenetworks.Provider{User: user, Password: password,}
+
 	records, err := p.GetRecords(context.TODO(), domain)
 	if err != nil {
 		t.Log(records)
@@ -42,7 +41,26 @@ func TestGetRecords(t *testing.T) {
 	t.Log(records)
 }
 
+func TestAppendRecords(t *testing.T) {
+	p := &corenetworks.Provider{User: user, Password: password,}
+
+	appendedRecords, err := p.AppendRecords(context.TODO(), domain, []libdns.Record{
+		{
+			Name: "test",
+			TTL: 300,
+			Type: "TXT",
+			Value: "test",
+		},
+	})
+	if err != nil {
+		t.Log(appendedRecords)
+		t.Fatal(err)
+	}
+}
+
 func TestSetRecords(t *testing.T) {
+	p := &corenetworks.Provider{User: user, Password: password,}
+
 	setRecords, err := p.SetRecords(context.TODO(), domain, []libdns.Record{
 		{
 			Name: "test",
@@ -58,6 +76,8 @@ func TestSetRecords(t *testing.T) {
 }
 
 func TestDeleteRecords(t *testing.T) {
+	p := &corenetworks.Provider{User: user, Password: password,}
+
 	delRecords, err := p.DeleteRecords(context.TODO(), domain, []libdns.Record{
 		{
 			Name: "test",
@@ -71,6 +91,8 @@ func TestDeleteRecords(t *testing.T) {
 }
 
 func TestGetZones(t *testing.T) {
+	p := &corenetworks.Provider{User: user, Password: password,}
+
 	zones, err := corenetworks.GetZones(context.TODO(), p)
 	if err != nil {
 		t.Log(zones)
@@ -80,6 +102,8 @@ func TestGetZones(t *testing.T) {
 }
 
 func TestGetZone(t *testing.T) {
+	p := &corenetworks.Provider{User: user, Password: password,}
+
 	zone, err := corenetworks.GetZone(context.TODO(), p, domain)
 	if err != nil {
 		t.Log(zone)

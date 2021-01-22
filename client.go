@@ -14,66 +14,10 @@ import (
 	"github.com/libdns/libdns"
 )
 
-// login authentication payload for token
-type credentials struct {
-	User string `json:"login"`
-	Password string `json:"password"`
-}
-
-// token session token received by login
-type token struct {
-	Token  string `json:"token"`
-	Expires time.Duration `json:"expires"`
-}
-
-// record dns record form 
-type record struct {
-	Name string `json:"name,omitempty"`
-	TTL time.Duration `json:"ttl,omitempty"`
-	Type string `json:"type,omitempty"`
-	Data string `json:"data,omitempty"`
-}
-
-// unconform record returned by core-networks record list
-type unconformRecord struct {
-	Name string `json:"name,omitempty"`
-	TTL  string `json:"ttl,omitempty"`
-	Type string `json:"type,omitempty"`
-	Data string `json:"data,omitempty"`
-}
-
-// Zone list item
-type Zone struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-}
-
-// ZoneDetails zone informations
-type ZoneDetails struct {
-	Active bool `json:"active"`
-	DNSSEC bool `json:"dnssec"`
-	Master string `json:"master"`
-	Name string `json:"name"`
-	TSIG tsig `json:"tsig"`
-	Type string `json:"type"`
-}
-
-type tsig struct {
-	Algorithem string `json:"algo"`
-	Secret string `json:"secret"`
-}
-
-var (
-	// CurrentToken latest token set by Login
-	currentToken token = token{"",0}
-	// tokenExparation time until token expires
-	tokenExperation time.Time = time.Now()
-)
-
 // doRequest performes http api request and returns http body
 func doRequest(p *Provider, req *http.Request) ([]byte, error) {
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer " + currentToken.Token)
+	req.Header.Set("Authorization", "Bearer " + p.CurrentToken)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -101,18 +45,15 @@ func login(ctx context.Context, p *Provider) error {
 
 	var loginRespBody token
 	if json.Unmarshal(respBody, &loginRespBody) != nil {return err}
-	currentToken = token{
-		Token: loginRespBody.Token,
-		Expires: time.Duration(loginRespBody.Expires) * time.Second,
-	}
-	tokenExperation = time.Now().Add(currentToken.Expires)
+	p.CurrentToken = loginRespBody.Token
+	p.TokenExperation = time.Now().Add(time.Duration(loginRespBody.Expires) * time.Second)
 
 	return nil
 }
 
 // checkToken refresh token if expired
 func checkToken(ctx context.Context, p *Provider) error {
-	if tokenExperation.Sub(time.Now()) <= 0 {
+	if len(p.CurrentToken) == 0 || p.TokenExperation.Sub(time.Now()) <= 0 {
 		return login(ctx, p)
 	}
 	return nil
@@ -208,7 +149,10 @@ func commit(ctx context.Context, p *Provider, domain string) error {
 	return nil
 }
 
-// GetZones all zones of account
+
+/* provider specific functions */
+
+// GetZones list all zones of account
 func GetZones(ctx context.Context, p *Provider) ([]Zone, error) {
 	checkToken(ctx, p)
 
@@ -225,7 +169,7 @@ func GetZones(ctx context.Context, p *Provider) ([]Zone, error) {
 	return zones, nil
 }
 
-// GetZone details of zone
+// GetZone get details of zone
 func GetZone(ctx context.Context, p *Provider, domain string) (ZoneDetails, error) {
 	checkToken(ctx, p)
 

@@ -5,4 +5,4 @@ This package implements the libdns interfaces for the [Core Networks Beta API](h
 
 # Authentication
 
-Requires API user and password to get authentication token. For testing the environment variables `LIBDNS_TEST_USER`, `LIBDNS_TEST_USER`, `LIBDNS_TEST_DOMAIN` must be set.
+Requires api user and password to get authentication token. For testing the environment variables `LIBDNS_TEST_USER`, `LIBDNS_TEST_PASSWORD`, `LIBDNS_TEST_DOMAIN` must be set.

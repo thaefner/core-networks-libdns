@@ -3,6 +3,7 @@ package corenetworks
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/libdns/libdns"
 )
@@ -11,6 +12,10 @@ import (
 type Provider struct {
 	User string `json:"user"`
 	Password string `json:"password"`
+	// CurrentToken latest token set by login(should not be set manual)
+	CurrentToken string
+	// TokenExparation time until token expires(should not be set manual)
+	TokenExperation time.Time
 }
 
 // GetRecords lists all the records in the zone.
