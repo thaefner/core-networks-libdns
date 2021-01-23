@@ -113,9 +113,6 @@ func setRecord(ctx context.Context, p *Provider, domain string, r record) (libdn
 	_, err = doRequest(p, req)
 	if err != nil {return libdns.Record{}, err}
 
-	commit(ctx, p, domain)
-	if err != nil {return libdns.Record{}, err}
-
 	return convertRecord(domain, r), nil
 }
 
