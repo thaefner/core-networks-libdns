@@ -31,22 +31,3 @@ type unconformRecord struct {
 	Type string `json:"type,omitempty"`
 	Data string `json:"data,omitempty"`
 }
-
-// Zone list item
-type Zone struct {
-	Name string `json:"name"`
-	Type string `json:"type"`
-}
-
-// ZoneDetails zone informations
-type ZoneDetails struct {
-	Active bool `json:"active"`
-	DNSSEC bool `json:"dnssec"`
-	Master string `json:"master,omitempty"`
-	Name string `json:"name"`
-	TSIG struct {
-		Algorithem string `json:"algo"`
-		Secret string `json:"secret"`
-	} `json:"tsig,omitempty"`
-	Type string `json:"type"`
-}

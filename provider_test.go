@@ -89,25 +89,3 @@ func TestDeleteRecords(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-
-func TestGetZones(t *testing.T) {
-	p := &corenetworks.Provider{User: user, Password: password,}
-
-	zones, err := corenetworks.GetZones(context.TODO(), p)
-	if err != nil {
-		t.Log(zones)
-		t.Fatal(err)
-	}
-	t.Log(zones)
-}
-
-func TestGetZone(t *testing.T) {
-	p := &corenetworks.Provider{User: user, Password: password,}
-
-	zone, err := corenetworks.GetZone(context.TODO(), p, domain)
-	if err != nil {
-		t.Log(zone)
-		t.Fatal(err)
-	}
-	t.Log(zone)
-}

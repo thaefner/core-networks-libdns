@@ -145,39 +145,3 @@ func commit(ctx context.Context, p *Provider, domain string) error {
 
 	return nil
 }
-
-
-/* provider specific functions */
-
-// GetZones list all zones of account
-func GetZones(ctx context.Context, p *Provider) ([]Zone, error) {
-	checkToken(ctx, p)
-
-	req, err := http.NewRequestWithContext(ctx, "GET", "https://beta.api.core-networks.de/dnszones/", nil)
-	if err != nil {return nil, err}
-	
-	respBody, err := doRequest(p, req)
-	if err != nil {return nil, err}
-
-	var zones = []Zone{}
-	err = json.Unmarshal(respBody, &zones)
-	if err != nil {return nil, err}
-	
-	return zones, nil
-}
-
-// GetZone get details of zone
-func GetZone(ctx context.Context, p *Provider, domain string) (ZoneDetails, error) {
-	checkToken(ctx, p)
-
-	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("https://beta.api.core-networks.de/dnszones/%s", domain), nil)
-	if err != nil {return ZoneDetails{}, err}
-	
-	respBody, err := doRequest(p, req)
-	if err != nil {return ZoneDetails{}, err}
-
-	var zone = ZoneDetails{}
-	if json.Unmarshal(respBody, &zone) != nil {return ZoneDetails{}, err}
-
-	return zone, nil
-}
